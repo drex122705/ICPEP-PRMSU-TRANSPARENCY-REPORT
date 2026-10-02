@@ -1,0 +1,171 @@
+/* ==========================================================================
+   ICpEP PRMSU - Official Brand & Institutional Stylesheet
+   Theme: Official PRMSU & ICpEP.se Blue, Cyan Circuit & Engineering Gold
+   ========================================================================== */
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020b18;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0B3B7B;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 192, 243, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00C0F3;
+}
+
+/* PCB Circuit Board Traces & Glow */
+.pcb-trace {
+  stroke: #00C0F3;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 4px rgba(0, 192, 243, 0.6));
+}
+
+.pcb-node {
+  fill: #00C0F3;
+  filter: drop-shadow(0 0 6px rgba(0, 192, 243, 0.9));
+}
+
+.pcb-trace-gold {
+  stroke: #F4B41A;
+  stroke-width: 1.5;
+  fill: none;
+  opacity: 0.75;
+  filter: drop-shadow(0 0 4px rgba(244, 180, 26, 0.5));
+}
+
+.pcb-node-gold {
+  fill: #F4B41A;
+  filter: drop-shadow(0 0 5px rgba(244, 180, 26, 0.8));
+}
+
+/* Angled Geometric Banners (Exact match to official letterhead) */
+.clip-banner-left {
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 0% 100%);
+}
+
+.clip-banner-sub {
+  clip-path: polygon(0 0, 96% 0, 92% 100%, 0% 100%);
+}
+
+.clip-chevron-1 {
+  clip-path: polygon(0 0, 75% 0, 100% 100%, 25% 100%);
+}
+
+.clip-chevron-2 {
+  clip-path: polygon(20% 0, 85% 0, 100% 100%, 35% 100%);
+}
+
+/* Status Badges */
+.badge-paid {
+  background-color: rgba(0, 192, 243, 0.12);
+  color: #00E5FF;
+  border: 1px solid rgba(0, 192, 243, 0.4);
+}
+
+.badge-pending {
+  background-color: rgba(244, 180, 26, 0.12);
+  color: #F4B41A;
+  border: 1px solid rgba(244, 180, 26, 0.4);
+}
+
+.badge-discrepancy {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.badge-unpaid {
+  background-color: rgba(148, 163, 184, 0.12);
+  color: #94A3B8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* File Drop Zone */
+#file-drop-zone.drag-active {
+  border-color: #00C0F3;
+  background-color: rgba(0, 192, 243, 0.08);
+  box-shadow: 0 0 25px rgba(0, 192, 243, 0.2);
+  transform: scale(1.01);
+}
+
+/* Pulse animation for PCB bus lines */
+@keyframes dataPulse {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+.animated-pcb-pulse {
+  stroke-dasharray: 10, 20;
+  animation: dataPulse 4s linear infinite;
+}
+
+/* 3D Intro Container */
+#intro-screen {
+  perspective: 1200px;
+}
+
+#intro-content {
+  transform-style: preserve-3d;
+}
+
+/* COA Liquidation Print Layout */
+@media print {
+  #intro-screen,
+  #scanner-modal,
+  #btn-open-scanner,
+  #btn-reset-data,
+  #empty-state-banner,
+  button {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .official-header-container {
+    background: #ffffff !important;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    color: #000 !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    color: #000 !important;
+    border: 1px solid #94a3b8 !important;
+  }
+
+  td {
+    border: 1px solid #cbd5e1 !important;
+    color: #000 !important;
+  }
+}
