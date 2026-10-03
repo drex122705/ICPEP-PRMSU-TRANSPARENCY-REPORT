@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICpEP.se PRMSU | Official Financial Transparency Portal</title>
+  <meta name="description" content="Official Financial Disclosure and Transparency Portal of the Institute of Computer Engineers of the Philippines - President Ramon Magsaysay State University Chapter." />
+
+  <!-- Fonts: Inter, Montserrat, and JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js for 3D CpE Motherboard & CPU Tagline Animation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Chart.js for High-Impact Infographics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- SheetJS for In-Browser Local Excel/CSV Scanning -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <!-- Mammoth.js for Word Document (.docx) Parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+
+  <link rel="stylesheet" href="./style.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            heading: ['"Montserrat"', 'sans-serif'],
+            display: ['"Cinzel"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            prmsu: {
+              navy: '#002554',      // PRMSU Official Navy
+              deep: '#010E21',      // Base Midnight
+              royal: '#004393',     // Banner Royal Blue
+              cyan: '#00C0F3',      // Circuit Cyan
+              cyanGlow: '#00E5FF',
+              gold: '#F4B41A',      // Engineering / University Gold
+              orange: '#FF6B00',    // College of Engineering Orange
+              card: '#031733',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#010E21] text-slate-100 antialiased selection:bg-prmsu-cyan selection:text-slate-950 min-h-screen flex flex-col relative overflow-x-hidden font-sans">
+
+  <!-- ===================================================================== -->
+  <!-- 3D INTERACTIVE CPE MOTHERBOARD INTRO ("ICPEP PRMSU, we serve you")    -->
+  <!-- ===================================================================== -->
+  <div id="intro-screen" class="fixed inset-0 z-50 bg-[#010a18] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000">
+
+    <!-- Three.js 3D Microchip & PCB Motherboard Canvas -->
+    <canvas id="three-intro-canvas" class="absolute inset-0 w-full h-full pointer-events-auto"></canvas>
+
+    <!-- Vignette & Cyber Circuit Lighting -->
+    <div class="absolute inset-0 bg-radial-gradient from-transparent via-[#010a18]/60 to-[#010a18] pointer-events-none"></div>
+
+    <!-- Floating CpE Holographic HUD Content -->
+    <div id="intro-content" class="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center pointer-events-none select-none">
+
+      <!-- Microcontroller / IC Insignia -->
+      <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-prmsu-royal via-prmsu-cyan to-prmsu-gold p-0.5 shadow-2xl shadow-cyan-500/30 mb-6 flex items-center justify-center transform hover:scale-105 transition-transform backdrop-blur-md">
+        <div class="w-full h-full bg-[#02132b] rounded-2xl flex flex-col items-center justify-center p-2 text-center border border-cyan-400/40 relative overflow-hidden">
+          <div class="absolute inset-0 bg-[radial-gradient(#00C0F3_1px,transparent_1px)] [background-size:8px_8px] opacity-20"></div>
+          <i data-lucide="cpu" class="w-9 h-9 text-prmsu-cyan mb-1 animate-pulse"></i>
+          <span class="font-mono text-[9px] tracking-wider text-prmsu-cyan font-bold">CpE • ICpEP</span>
+        </div>
+      </div>
+
+      <!-- Institution Identifier -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-prmsu-navy/90 border border-prmsu-cyan/40 text-prmsu-cyan text-xs sm:text-sm font-mono tracking-widest uppercase mb-4 shadow-xl backdrop-blur-md">
+        <span class="w-2 h-2 rounded-full bg-prmsu-cyan animate-ping"></span>
+        <span>President Ramon Magsaysay State University</span>
+      </div>
+
+      <!-- Main Tagline in High-Impact 3D Perspective -->
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white uppercase drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)] font-heading">
+        ICPEP PRMSU
+      </h1>
+
+      <div class="mt-2 text-2xl sm:text-3xl md:text-5xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-prmsu-cyan via-amber-200 to-prmsu-gold tracking-wider drop-shadow-lg">
+        “We Serve You”
+      </div>
+
+      <p class="mt-4 text-xs sm:text-sm text-cyan-200/80 font-mono tracking-wider max-w-xl">
+        Official Financial Transparency & Public Accountability Portal • CpE Student Org Treasury
+      </p>
+
+      <!-- Interactive Instruction / Trigger -->
+      <div class="mt-10 pointer-events-auto">
+        <button id="btn-enter-portal" class="px-8 py-4 rounded-xl font-extrabold font-mono text-sm tracking-wider uppercase bg-gradient-to-r from-prmsu-cyan via-sky-400 to-prmsu-gold hover:from-sky-300 hover:to-prmsu-cyan text-slate-950 shadow-2xl shadow-cyan-500/40 hover:shadow-cyan-400/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+          <i data-lucide="zap" class="w-5 h-5 text-slate-950"></i>
+          <span>Initialize Transparency Portal</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-950"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Quick Skip Intro -->
+    <button id="btn-skip-intro" class="absolute bottom-6 right-6 z-20 text-xs font-mono text-slate-400 hover:text-prmsu-cyan transition-colors py-1.5 px-3 rounded-lg bg-slate-900/80 border border-slate-700/60 backdrop-blur-md pointer-events-auto">
+      Skip Intro [ESC]
+    </button>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- OFFICIAL LETTERHEAD HEADER (EXACT REPLICA OF ATTACHED TEMPLATE)      -->
+  <!-- ===================================================================== -->
+  <header class="official-header-container bg-white text-slate-900 shadow-2xl relative z-30 overflow-hidden border-b-4 border-prmsu-cyan">
+
+    <!-- Top White Document Band -->
+    <div class="relative px-4 sm:px-8 py-3 bg-gradient-to-r from-white via-slate-50 to-white flex flex-col lg:flex-row items-center justify-between gap-4">
+
+      <!-- Left: Geometric Corner Chevrons & University Titles -->
+      <div class="flex items-center gap-4 sm:gap-6 w-full lg:w-auto">
+
+        <!-- Angled Cyan & Royal Geometric Chevrons (from official letterhead) -->
+        <div class="hidden sm:flex items-center gap-1.5 flex-shrink-0">
+          <div class="w-3.5 h-16 bg-prmsu-cyan transform -skew-x-[25deg]"></div>
+          <div class="w-3.5 h-16 bg-prmsu-royal transform -skew-x-[25deg]"></div>
+          <div class="w-2.5 h-16 bg-prmsu-navy transform -skew-x-[25deg]"></div>
+        </div>
+
+        <div class="leading-tight">
+          <div class="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-slate-600 uppercase font-heading">
+            REPUBLIC OF THE PHILIPPINES
+          </div>
+          <h1 class="text-lg sm:text-2xl lg:text-[26px] font-black tracking-tight text-[#002B66] uppercase font-heading mt-0.5">
+            PRESIDENT RAMON MAGSAYSAY STATE UNIVERSITY
+          </h1>
+          <div class="text-[10px] sm:text-xs text-[#004899] font-semibold mt-0.5 font-sans">
+            <span class="text-slate-500 font-normal">(formerly Ramon Magsaysay Technological University)</span>
+            <span class="font-bold tracking-wider uppercase ml-1">MAIN CAMPUS - IBA, ZAMBALES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: The 3 Official Circular Emblems / Seals -->
+      <div class="flex items-center gap-3 sm:gap-4 self-center lg:self-auto flex-shrink-0">
+
+        <!-- Seal 1: PRMSU Official University Seal -->
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-0.5 border-2 border-prmsu-gold shadow-md flex items-center justify-center relative group" title="PRMSU Official Seal">
+          <div class="w-full h-full rounded-full border border-prmsu-navy/30 bg-gradient-to-b from-[#003882] to-[#001f4d] flex flex-col items-center justify-center text-center p-1 text-white">
+            <i data-lucide="landmark" class="w-5 h-5 text-prmsu-gold mb-0.5"></i>
+            <span class="text-[7px] font-bold font-heading text-prmsu-gold tracking-tighter uppercase leading-none">PRMSU</span>
+            <span class="text-[5px] text-slate-300 font-mono">1910</span>
+          </div>
+        </div>
+
+        <!-- Seal 2: College of Engineering Seal (Orange Cogwheel) -->
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-0.5 border-2 border-prmsu-orange shadow-md flex items-center justify-center relative group" title="College of Engineering">
+          <div class="w-full h-full rounded-full border border-orange-400 bg-gradient-to-b from-[#e65100] to-[#bf360c] flex flex-col items-center justify-center text-center p-1 text-white">
+            <i data-lucide="cog" class="w-5 h-5 text-amber-200 animate-[spin_12s_linear_infinite]"></i>
+            <span class="text-[6.5px] font-bold font-heading text-amber-200 tracking-tighter uppercase leading-none mt-0.5">ENGINEERING</span>
+          </div>
+        </div>
+
+        <!-- Seal 3: ICpEP.se PRMSU Chapter Seal (Microprocessor Circuit) -->
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-0.5 border-2 border-prmsu-cyan shadow-md flex items-center justify-center relative group" title="ICpEP.se PRMSU Chapter">
+          <div class="w-full h-full rounded-full border border-cyan-400 bg-gradient-to-b from-[#002b66] to-[#001333] flex flex-col items-center justify-center text-center p-1 text-white">
+            <i data-lucide="cpu" class="w-5 h-5 text-prmsu-cyan mb-0.5"></i>
+            <span class="text-[7px] font-black font-heading text-prmsu-cyan tracking-tighter uppercase leading-none">ICpEP.se</span>
+            <span class="text-[5px] text-amber-300 font-mono">CpE</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Official Angled Polygon Ribbon 1: COLLEGE OF ENGINEERING -->
+    <div class="relative bg-gradient-to-r from-[#001a40] via-[#002f6c] to-[#001a40] text-center py-1.5 px-4 shadow-inner border-t border-cyan-400/40 clip-banner-left">
+      <div class="max-w-7xl mx-auto flex items-center justify-center gap-4 text-xs sm:text-sm font-black font-heading tracking-[0.25em] text-[#FFD700] uppercase">
+        <span class="text-prmsu-cyan text-xs">◄◄</span>
+        <span>COLLEGE OF ENGINEERING</span>
+        <span class="text-prmsu-cyan text-xs">►►</span>
+      </div>
+    </div>
+
+    <!-- Official Angled Polygon Ribbon 2: ICPEP PRMSU CHAPTER -->
+    <div class="relative bg-gradient-to-r from-[#001026] via-[#001f4d] to-[#001026] py-2.5 px-4 border-t border-prmsu-cyan/60 shadow-xl">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div>
+          <div class="text-sm sm:text-base md:text-lg font-black font-heading tracking-wider text-white uppercase flex items-center justify-center sm:justify-start gap-2">
+            <span>INSTITUTE OF COMPUTER ENGINEERS OF THE PHILIPPINES</span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold font-heading tracking-widest text-prmsu-cyan uppercase mt-0.5">
+            Student Edition - PRMSU CHAPTER
+          </div>
+        </div>
+
+        <!-- Live Clock & Official Quick Ingestion Button -->
+        <div class="flex items-center gap-3">
+          <div class="hidden md:flex flex-col text-right font-mono text-[11px] text-slate-300 leading-tight">
+            <span id="live-pht-clock" class="text-prmsu-cyan">PST: Loading...</span>
+            <span class="text-slate-400 text-[10px]">Office of the Treasury</span>
+          </div>
+
+          <button id="btn-open-scanner" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold font-mono bg-gradient-to-r from-prmsu-cyan to-sky-400 hover:from-sky-300 hover:to-prmsu-cyan text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+            <i data-lucide="file-up" class="w-4 h-4 text-slate-950"></i>
+            <span>Ingest Document / Sheet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-status Audit Bar -->
+    <div class="bg-[#000a17] py-1.5 px-4 sm:px-8 border-t border-slate-800 text-[11px] font-mono text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <span>Dataset Status:</span>
+        <span id="dataset-status-badge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span>Awaiting Ingestion (Empty)</span>
+        </span>
+        <span id="sync-timer-display" class="text-prmsu-cyan hidden">(Next sync in 60s)</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="btn-replay-intro" class="hover:text-prmsu-cyan transition-colors flex items-center gap-1">
+          <i data-lucide="play-circle" class="w-3.5 h-3.5"></i>
+          Replay 3D Intro
+        </button>
+        <span>|</span>
+        <button id="btn-reset-data" class="hover:text-rose-400 transition-colors flex items-center gap-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          Reset to Empty
+        </button>
+        <span>|</span>
+        <button onclick="window.print()" class="hover:text-white transition-colors flex items-center gap-1">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          Print COA Audit
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN TRANSPARENCY DASHBOARD                                           -->
+  <!-- ===================================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- EMPTY STATE HERO (Visible when no data is loaded) -->
+    <div id="empty-state-banner" class="rounded-3xl bg-prmsu-card/80 border-2 border-dashed border-prmsu-cyan/40 p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl backdrop-blur-md">
+      <!-- Circuit Background Motif -->
+      <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-prmsu-cyan/5 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-2xl mx-auto relative z-10">
+        <div class="w-16 h-16 rounded-2xl bg-prmsu-cyan/10 text-prmsu-cyan border border-prmsu-cyan/30 mx-auto flex items-center justify-center mb-5 shadow-inner">
+          <i data-lucide="file-spreadsheet" class="w-8 h-8"></i>
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-prmsu-cyan/10 border border-prmsu-cyan/30 text-prmsu-cyan text-xs font-mono mb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-prmsu-cyan animate-pulse"></span>
+          <span>PORTAL READY FOR INGESTION</span>
+        </div>
+
+        <h3 class="text-2xl sm:text-3xl font-extrabold text-white font-heading">
+          No Ingested Financial Records Yet
+        </h3>
+
+        <p class="text-slate-300 text-sm sm:text-base mt-2 leading-relaxed">
+          The ICpEP PRMSU portal begins in a clean state. Upload your class/organization Excel spreadsheet (<code class="text-prmsu-cyan font-mono">tanginang  gforms to.xlsx</code>), discrepancy report (<code class="text-prmsu-cyan font-mono">.docx</code>), or paste your live Google Sheet link to automatically generate all visual infographics, dues compliance, and search matrices.
+        </p>
+
+        <!-- Drop & Ingestion CTAs -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <button id="btn-empty-upload" class="px-6 py-3.5 rounded-xl font-bold font-mono text-sm bg-prmsu-cyan hover:bg-sky-400 text-slate-950 shadow-xl shadow-cyan-500/20 hover:scale-105 transition-all flex items-center gap-2">
+            <i data-lucide="upload" class="w-4 h-4 text-slate-950"></i>
+            <span>Upload Excel or Word File</span>
+          </button>
+
+          <button id="btn-empty-gsheet" class="px-6 py-3.5 rounded-xl font-bold font-mono text-sm bg-[#001736] hover:bg-slate-800 border border-prmsu-cyan/40 text-slate-200 hover:text-white transition-all flex items-center gap-2">
+            <i data-lucide="link" class="w-4 h-4 text-prmsu-cyan"></i>
+            <span>Link Google Sheet (Auto-Sync)</span>
+          </button>
+
+          <button id="btn-empty-demo" class="px-5 py-3.5 rounded-xl font-mono text-xs bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 transition-all">
+            Load ICpEP PRMSU Sample Data
+          </button>
+        </div>
+
+        <div class="mt-6 text-xs font-mono text-slate-400">
+          💡 You can drag & drop your files anywhere onto this window!
+        </div>
+      </div>
+    </div>
+
+    <!-- OFFICIAL FINANCIAL KPI SUMMARY CARDS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- Card 1: Gross Collections -->
+      <div class="p-5 rounded-2xl bg-prmsu-card/90 border border-prmsu-royal/60 shadow-xl relative overflow-hidden group hover:border-prmsu-cyan/50 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-mono">
+          <span class="uppercase tracking-wider">Gross Collections</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+            <i data-lucide="wallet" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div id="kpi-total-collections" class="text-2xl sm:text-3xl font-extrabold font-mono text-white">₱0.00</div>
+          <div class="mt-1 flex items-center gap-1.5 text-xs font-mono text-slate-400">
+            <span id="kpi-submissions-count">0 recorded entries</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Official Disbursements -->
+      <div class="p-5 rounded-2xl bg-prmsu-card/90 border border-prmsu-royal/60 shadow-xl relative overflow-hidden group hover:border-rose-500/50 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-mono">
+          <span class="uppercase tracking-wider">Official Disbursements</span>
+          <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center">
+            <i data-lucide="receipt" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div id="kpi-total-expenses" class="text-2xl sm:text-3xl font-extrabold font-mono text-rose-300">₱0.00</div>
+          <div class="mt-1 flex items-center gap-1.5 text-xs font-mono text-slate-400">
+            <span id="kpi-expenses-count">0 audited expense vouchers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Net Vault Balance -->
+      <div class="p-5 rounded-2xl bg-prmsu-card/90 border border-prmsu-royal/60 shadow-xl relative overflow-hidden group hover:border-prmsu-cyan/50 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-mono">
+          <span class="uppercase tracking-wider">Net Treasury Vault</span>
+          <div class="w-8 h-8 rounded-lg bg-prmsu-cyan/10 text-prmsu-cyan border border-prmsu-cyan/20 flex items-center justify-center">
+            <i data-lucide="landmark" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div id="kpi-net-balance" class="text-2xl sm:text-3xl font-extrabold font-mono text-prmsu-cyan">₱0.00</div>
+          <div class="mt-1 text-xs font-mono text-slate-400 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-prmsu-cyan"></span>
+            <span>Audited Available Funds</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Discrepancy Audits -->
+      <div class="p-5 rounded-2xl bg-prmsu-card/90 border border-prmsu-royal/60 shadow-xl relative overflow-hidden group hover:border-amber-500/50 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-mono">
+          <span class="uppercase tracking-wider">Flagged Discrepancies</span>
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center">
+            <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div id="kpi-discrepancies-count" class="text-2xl sm:text-3xl font-extrabold font-mono text-amber-400">0</div>
+          <div class="mt-1 text-xs font-mono text-slate-400">
+            Duplicate refs or underpayments
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- OFFICIAL INFOGRAPHICS & ANALYTICS VISUALIZATION -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Infographic 1: Compliance Gauge -->
+      <div class="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 flex flex-col justify-between shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-white text-base font-heading">Class Dues Clearance</h3>
+            <p class="text-xs text-slate-400 font-mono">Cohort Payment Compliance</p>
+          </div>
+          <span id="badge-compliance-rate" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-prmsu-cyan/10 text-prmsu-cyan border border-prmsu-cyan/30">
+            0% Cleared
+          </span>
+        </div>
+        <div class="relative h-56 flex items-center justify-center">
+          <canvas id="chart-compliance"></canvas>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 grid grid-cols-2 text-center text-xs font-mono">
+          <div>
+            <span class="text-slate-500 block">Fully Cleared</span>
+            <span id="stat-cleared-count" class="text-white font-bold text-sm">0</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block">Pending / Unpaid</span>
+            <span id="stat-pending-count" class="text-amber-400 font-bold text-sm">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Infographic 2: Expense Allocation -->
+      <div class="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 flex flex-col justify-between shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-white text-base font-heading">Disbursement Breakdown</h3>
+            <p class="text-xs text-slate-400 font-mono">Audited Org Expenditure</p>
+          </div>
+          <span class="text-xs font-mono text-slate-400">COA Standard</span>
+        </div>
+        <div class="relative h-56 flex items-center justify-center">
+          <canvas id="chart-expenses"></canvas>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-400 text-center font-mono">
+          Interactive infographic: Hover slices for expense totals
+        </div>
+      </div>
+
+      <!-- Infographic 3: Collection Timeline -->
+      <div class="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 flex flex-col justify-between shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-white text-base font-heading">Collection Velocity</h3>
+            <p class="text-xs text-slate-400 font-mono">Submission Timeline & Influx</p>
+          </div>
+          <span class="text-xs font-mono text-prmsu-cyan flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-prmsu-cyan"></span> Live Audit
+          </span>
+        </div>
+        <div class="relative h-56 flex items-center justify-center">
+          <canvas id="chart-timeline"></canvas>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-400 text-center font-mono">
+          Daily intake volume & peak surges
+        </div>
+      </div>
+
+    </section>
+
+    <!-- STUDENT SELF-SERVICE CLEARANCE CHECKER (SEARCH MATRIX) -->
+    <section class="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 sm:p-8 shadow-xl relative">
+      <div class="max-w-3xl mb-6">
+        <div class="flex items-center gap-2 text-xs font-mono text-prmsu-cyan font-bold uppercase tracking-wider mb-1">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span>Student Public Inquiries & Verification</span>
+        </div>
+        <h3 class="text-2xl font-bold text-white font-heading">Student Dues Verification & Clearance Matrix</h3>
+        <p class="text-slate-300 text-sm mt-1">
+          Students may verify the clearance of their semester dues, laboratory fees, and event contributions by entering their Student ID or Full Name below.
+        </p>
+      </div>
+
+      <!-- Search Bar & Filters -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+          <input id="student-search-input" type="text" placeholder="Search by Student ID (e.g. 2024-1001) or Full Name..."
+                 class="w-full bg-[#010c1c] border border-prmsu-royal/70 rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-prmsu-cyan transition-all font-sans" />
+        </div>
+
+        <select id="filter-status" class="bg-[#010c1c] border border-prmsu-royal/70 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-prmsu-cyan font-mono">
+          <option value="ALL">All Statuses</option>
+          <option value="PAID">Verified Paid</option>
+          <option value="PENDING">Pending Verification</option>
+          <option value="DISCREPANCY">Flagged Discrepancy</option>
+          <option value="UNPAID">Unpaid / No Record</option>
+        </select>
+      </div>
+
+      <!-- Student Clearance Table -->
+      <div class="mt-6 overflow-x-auto rounded-xl border border-prmsu-royal/60 bg-[#010a17]">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead>
+            <tr class="border-b border-prmsu-royal/60 bg-[#001736] text-slate-300 font-mono text-xs uppercase tracking-wider">
+              <th class="py-3 px-4">Student ID</th>
+              <th class="py-3 px-4">Student Name</th>
+              <th class="py-3 px-4">Required Dues</th>
+              <th class="py-3 px-4">Amount Paid</th>
+              <th class="py-3 px-4">Reference No.</th>
+              <th class="py-3 px-4">Audit Status</th>
+              <th class="py-3 px-4 text-right">Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="student-records-tbody" class="divide-y divide-prmsu-royal/30 font-mono">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination / Counter -->
+      <div class="mt-4 flex items-center justify-between text-xs font-mono text-slate-400">
+        <span id="records-counter-text">Showing 0 student records</span>
+        <span class="text-slate-500">ICpEP.se PRMSU Chapter • Treasury Commission</span>
+      </div>
+    </section>
+
+    <!-- DISCREPANCY AUDIT & RECONCILIATION CENTER -->
+    <section class="rounded-2xl bg-gradient-to-r from-amber-950/20 via-prmsu-card to-prmsu-card border border-amber-500/30 p-6 sm:p-8 shadow-xl">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex-shrink-0 flex items-center justify-center border border-amber-500/20">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2 font-heading">
+            Discrepancy Audit & Reconciliation Center
+            <span id="badge-discrepancy-active" class="px-2 py-0.5 rounded text-[11px] font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30">0 Discrepancies</span>
+          </h3>
+          <p class="text-slate-300 text-xs sm:text-sm mt-1">
+            Automated detection cross-references transaction reference codes against banking/e-wallet proof. Redundant references, partial underpayments, or unmapped names are held here for reconciliation.
+          </p>
+
+          <div id="discrepancy-items-container" class="mt-4 space-y-2.5 font-mono">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- AUTOMATED INGESTION & DOCUMENT SCANNER MODAL                          -->
+  <!-- ===================================================================== -->
+  <div id="scanner-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-prmsu-card border border-prmsu-cyan/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+
+      <!-- Close Button -->
+      <button id="btn-close-scanner" class="absolute top-6 right-6 p-2 rounded-xl bg-[#010e21] text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-11 h-11 rounded-xl bg-prmsu-cyan/10 text-prmsu-cyan flex items-center justify-center border border-prmsu-cyan/30">
+          <i data-lucide="scan-line" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white font-heading">Automated Document Ingestion & Sync</h3>
+          <p class="text-xs text-prmsu-cyan font-mono">Excel (.xlsx) • Word (.docx) • Google Sheets Live Sync</p>
+        </div>
+      </div>
+
+      <!-- Tab Selectors -->
+      <div class="flex border-b border-prmsu-royal mb-6 font-mono text-xs">
+        <button id="tab-btn-file" class="py-2.5 px-4 font-bold border-b-2 border-prmsu-cyan text-prmsu-cyan">
+          1. Upload Local Document / Excel
+        </button>
+        <button id="tab-btn-gsheet" class="py-2.5 px-4 text-slate-400 hover:text-slate-200">
+          2. Live Google Sheets Auto-Sync
+        </button>
+      </div>
+
+      <!-- Tab 1: Local File Scanner (Excel & Word) -->
+      <div id="tab-content-file" class="space-y-4">
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Upload your local Google Forms responses spreadsheet (<code class="text-prmsu-cyan">.xlsx</code>, <code class="text-prmsu-cyan">.csv</code>) or Discrepancy Report (<code class="text-prmsu-cyan">.docx</code>). The in-browser scanner automatically maps columns, detects student numbers, reconciles amounts, and generates the infographics.
+        </p>
+
+        <!-- Drop Zone -->
+        <div id="file-drop-zone" class="border-2 border-dashed border-prmsu-royal hover:border-prmsu-cyan rounded-2xl p-8 text-center bg-[#010a17] cursor-pointer transition-all">
+          <input id="file-input" type="file" accept=".xlsx, .xls, .csv, .docx" class="hidden" />
+          <i data-lucide="file-up" class="w-10 h-10 text-prmsu-cyan mx-auto mb-3"></i>
+          <p class="text-sm font-semibold text-white">Click to browse or drag & drop files here</p>
+          <p class="text-xs text-slate-400 mt-1 font-mono">Supports .xlsx, .xls, .csv, and .docx</p>
+        </div>
+
+        <div id="file-scan-status" class="hidden p-3 rounded-xl bg-[#001736] border border-prmsu-cyan/30 text-xs font-mono text-prmsu-cyan">
+          Scanning document...
+        </div>
+      </div>
+
+      <!-- Tab 2: Live Google Sheets Auto-Sync -->
+      <div id="tab-content-gsheet" class="space-y-4 hidden">
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Connect your Google Sheet linked to your live Google Forms. The portal polls for new submissions every 60 seconds so student dues reflect in real-time without redeploying code.
+        </p>
+
+        <div class="space-y-2">
+          <label class="block text-xs font-mono text-slate-400">Published Google Sheets CSV Link or Share URL:</label>
+          <input id="input-gsheet-url" type="text" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+                 class="w-full bg-[#010a17] border border-prmsu-royal rounded-xl px-4 py-3 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-prmsu-cyan" />
+        </div>
+
+        <div class="bg-[#010a17] rounded-xl p-4 border border-prmsu-royal text-xs text-slate-300 space-y-1.5 font-mono">
+          <div class="text-prmsu-cyan font-bold">📋 Instructions for Google Sheets:</div>
+          <div>1. In Google Sheets, click <span class="text-prmsu-cyan">File</span> &gt; <span class="text-prmsu-cyan">Share</span> &gt; <span class="text-prmsu-cyan">Publish to web</span>.</div>
+          <div>2. Select <span class="text-prmsu-cyan">Entire Document</span> and choose <span class="text-prmsu-cyan">Comma-separated values (.csv)</span>.</div>
+          <div>3. Paste that link here and click Save.</div>
+        </div>
+
+        <div class="pt-2">
+          <button id="btn-save-gsheet" class="px-5 py-2.5 bg-prmsu-cyan hover:bg-sky-400 font-bold font-mono text-slate-950 rounded-xl text-sm transition-all flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-slate-950"></i>
+            <span>Save & Connect Live Auto-Sync</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- OFFICIAL LETTERHEAD FOOTER (EXACT REPLICA WITH PCB CIRCUIT TRACES)   -->
+  <!-- ===================================================================== -->
+  <footer class="mt-auto relative bg-[#020b18] border-t-2 border-prmsu-cyan overflow-hidden select-none">
+
+    <!-- SVG PCB Circuit Board Motherboard Tracks (Exact styling from bottom of template) -->
+    <div class="w-full h-24 sm:h-28 relative overflow-hidden pointer-events-none">
+      <svg class="w-full h-full" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- Left Circuit Traces & Nodes -->
+        <path d="M 0,30 L 60,30 L 90,60 L 180,60 L 210,90 L 300,90" class="pcb-trace animated-pcb-pulse" />
+        <circle cx="300" cy="90" r="4.5" class="pcb-node" />
+
+        <path d="M 0,60 L 40,60 L 70,90 L 140,90 L 160,110 L 250,110" class="pcb-trace" />
+        <circle cx="250" cy="110" r="3.5" class="pcb-node" />
+
+        <path d="M 0,90 L 30,90 L 50,110 L 110,110" class="pcb-trace-gold" />
+        <circle cx="110" cy="110" r="3.5" class="pcb-node-gold" />
+
+        <circle cx="180" cy="60" r="3" class="pcb-node" />
+        <circle cx="70" cy="90" r="3" class="pcb-node" />
+
+        <!-- Right Circuit Traces & Nodes -->
+        <path d="M 1200,30 L 1140,30 L 1110,60 L 1020,60 L 990,90 L 900,90" class="pcb-trace animated-pcb-pulse" />
+        <circle cx="900" cy="90" r="4.5" class="pcb-node" />
+
+        <path d="M 1200,60 L 1160,60 L 1130,90 L 1060,90 L 1040,110 L 950,110" class="pcb-trace" />
+        <circle cx="950" cy="110" r="3.5" class="pcb-node" />
+
+        <path d="M 1200,90 L 1170,90 L 1150,110 L 1090,110" class="pcb-trace-gold" />
+        <circle cx="1090" cy="110" r="3.5" class="pcb-node-gold" />
+
+        <circle cx="1020" cy="60" r="3" class="pcb-node" />
+        <circle cx="1130" cy="90" r="3" class="pcb-node" />
+      </svg>
+
+      <!-- Center Typography overlay on PCB -->
+      <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <div class="text-xs sm:text-sm font-black font-heading tracking-widest text-white uppercase">
+          INSTITUTE OF COMPUTER ENGINEERS OF THE PHILIPPINES
+        </div>
+        <div class="text-[11px] sm:text-xs font-bold font-heading tracking-[0.2em] text-prmsu-cyan uppercase mt-0.5">
+          Student Edition - PRMSU CHAPTER
+        </div>
+        <div class="text-[10px] text-slate-400 font-mono mt-1">
+          President Ramon Magsaysay State University • Main Campus, Iba, Zambales
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Institutional Sub-Footer -->
+    <div class="bg-[#00060e] py-3 px-4 sm:px-8 border-t border-slate-800 text-[11px] text-slate-400 font-mono">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-prmsu-cyan font-bold">ICPEP PRMSU</span>
+          <span>•</span>
+          <span class="text-amber-300 italic">“We Serve You”</span>
+        </div>
+        <div>
+          Official Financial Transparency & Public Disclosure Standard
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
