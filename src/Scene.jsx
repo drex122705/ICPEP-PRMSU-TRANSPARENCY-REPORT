@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useScroll } from '@react-three/drei';
+import { useScroll, Environment } from '@react-three/drei';
+import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
 export function MotherboardScene() {
@@ -8,20 +9,20 @@ export function MotherboardScene() {
   const groupRef = useRef();
   const { camera } = useThree();
 
-  // Pulse animation data
-  const pulseCount = 80;
+  // Pulse animation data for active glowing traces
+  const pulseCount = 60;
   const { pulsePos, pulseVel } = useMemo(() => {
     const pos = new Float32Array(pulseCount * 3);
     const vel = [];
     for (let i = 0; i < pulseCount; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const dist = 18 + Math.random() * 32;
+      const dist = 18 + Math.random() * 40;
       pos[i * 3] = Math.cos(angle) * dist;
       pos[i * 3 + 1] = Math.sin(angle) * dist;
-      pos[i * 3 + 2] = 0.8 + Math.random() * 0.5;
+      pos[i * 3 + 2] = 1.0 + Math.random() * 0.5;
 
       vel.push({
-        speed: 0.15 + Math.random() * 0.25,
+        speed: 0.15 + Math.random() * 0.3,
         angle: angle,
         dist: dist
       });
@@ -31,26 +32,61 @@ export function MotherboardScene() {
 
   const pulseGeoRef = useRef();
 
+  // Custom geometries to represent chips and capacitors
+  const chips = useMemo(() => {
+    const items = [];
+    for(let i=0; i<15; i++) {
+      const x = (Math.random() - 0.5) * 80;
+      const y = (Math.random() - 0.5) * 60;
+
+      // Avoid the center where the main CPU is
+      if (Math.abs(x) < 25 && Math.abs(y) < 25) continue;
+
+      const isLarge = Math.random() > 0.7;
+      items.push({
+        position: [x, y, 1],
+        rotation: [0, 0, Math.random() > 0.5 ? 0 : Math.PI/2],
+        scale: isLarge ? [6 + Math.random()*4, 4 + Math.random()*2, 1.5] : [3, 2, 1],
+        type: isLarge ? 'chip' : 'logic'
+      });
+    }
+    return items;
+  }, []);
+
+  const capacitors = useMemo(() => {
+      const items = [];
+      for(let i=0; i<25; i++) {
+        const x = (Math.random() - 0.5) * 80;
+        const y = (Math.random() - 0.5) * 60;
+        if (Math.abs(x) < 20 && Math.abs(y) < 20) continue;
+
+        items.push({
+          position: [x, y, 1],
+          rotation: [Math.PI/2, 0, 0],
+          scale: [0.8 + Math.random()*0.5, 2 + Math.random()*1.5, 0.8 + Math.random()*0.5],
+        });
+      }
+      return items;
+  }, []);
+
   useFrame((state, delta) => {
-    // Camera fly-through based on scroll
-    // The scroll offset goes from 0 to 1 over the scrollable area of the canvas.
     const scrollOffset = scroll ? scroll.offset : 0;
 
     // Animate camera Z position to dive into the motherboard
-    const startZ = 75;
-    const endZ = 5;
+    const startZ = 70;
+    const endZ = 12; // closer
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, startZ - (startZ - endZ) * scrollOffset, 0.1);
 
     // Animate camera Y to get closer to the CPU
     const startY = -35;
-    const endY = -5;
+    const endY = -15;
     camera.position.y = THREE.MathUtils.lerp(camera.position.y, startY - (startY - endY) * scrollOffset, 0.1);
 
     // Subtly rotate the motherboard group based on scroll and time
     if (groupRef.current) {
-        groupRef.current.rotation.x = -0.4 + scrollOffset * 0.4;
-        groupRef.current.rotation.y = scrollOffset * 0.2;
-        groupRef.current.rotation.z += 0.0015;
+        groupRef.current.rotation.x = -0.4 + scrollOffset * 0.45;
+        groupRef.current.rotation.y = scrollOffset * 0.25;
+        groupRef.current.rotation.z += 0.001;
     }
 
     // Animate pulses
@@ -58,8 +94,8 @@ export function MotherboardScene() {
         const positions = pulseGeoRef.current.attributes.position.array;
         for (let i = 0; i < pulseCount; i++) {
           pulseVel[i].dist -= pulseVel[i].speed;
-          if (pulseVel[i].dist < 10) {
-            pulseVel[i].dist = 40 + Math.random() * 10;
+          if (pulseVel[i].dist < 12) {
+            pulseVel[i].dist = 40 + Math.random() * 20;
           }
           positions[i * 3] = Math.cos(pulseVel[i].angle) * pulseVel[i].dist;
           positions[i * 3 + 1] = Math.sin(pulseVel[i].angle) * pulseVel[i].dist;
@@ -70,59 +106,127 @@ export function MotherboardScene() {
 
   return (
     <>
-      <ambientLight intensity={0.6} />
-      <pointLight position={[30, 30, 40]} color="#00C0F3" intensity={3} distance={200} />
-      <pointLight position={[-30, -30, 40]} color="#F4B41A" intensity={2.5} distance={200} />
+      <Environment preset="night" />
+
+      <ambientLight intensity={0.1} />
+
+      {/* Harsh, realistic spotlight casting shadows */}
+      <spotLight
+        position={[40, 50, 60]}
+        angle={0.3}
+        penumbra={0.8}
+        intensity={20000}
+        color="#ffffff"
+        castShadow
+        shadow-bias={-0.0001}
+        shadow-mapSize={[2048, 2048]}
+      />
+
+      {/* Secondary colored rim lights */}
+      <spotLight position={[-40, -40, 20]} angle={0.5} penumbra={1} intensity={5000} color="#00C0F3" />
+      <spotLight position={[40, -40, 20]} angle={0.5} penumbra={1} intensity={3000} color="#F4B41A" />
 
       <group ref={groupRef}>
         {/* PCB Substrate */}
-        <mesh>
-          <planeGeometry args={[110, 80, 20, 20]} />
-          <meshStandardMaterial color="#021631" roughness={0.7} metalness={0.3} />
+        <mesh receiveShadow position={[0, 0, -0.5]}>
+          <boxGeometry args={[110, 80, 1]} />
+          <meshPhysicalMaterial
+            color="#020f20"
+            roughness={0.8}
+            metalness={0.1}
+            clearcoat={0.2}
+            clearcoatRoughness={0.8}
+          />
         </mesh>
 
-        {/* PCB Grid Lines (Using a grid helper for simplicity or multiple line segments) */}
-        <gridHelper args={[100, 30, 0x00C0F3, 0x062854]} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.2]} />
+        {/* Traces / Grid */}
+        <gridHelper args={[100, 40, '#2d2d2d', '#111111']} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]} />
+        <gridHelper args={[60, 10, '#4a3d13', '#4a3d13']} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.06]} />
 
         {/* Central CPU */}
-        <group position={[0, 0, 1.5]}>
-          {/* Substrate */}
-          <mesh>
-            <boxGeometry args={[22, 22, 1.2]} />
-            <meshStandardMaterial color="#010814" roughness={0.4} metalness={0.8} />
+        <group position={[0, 0, 0.5]}>
+          {/* CPU Base */}
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[22, 22, 1]} />
+            <meshPhysicalMaterial color="#0a0a0a" roughness={0.3} metalness={0.9} clearcoat={0.5} />
           </mesh>
 
-          {/* Heat Spreader */}
-          <mesh position={[0, 0, 0.9]}>
-            <boxGeometry args={[16, 16, 0.8]} />
-            <meshStandardMaterial color="#F4B41A" roughness={0.2} metalness={0.9} emissive="#3d2800" />
+          {/* Inner Heat Spreader */}
+          <mesh castShadow receiveShadow position={[0, 0, 0.75]}>
+            <boxGeometry args={[16, 16, 0.5]} />
+            <meshPhysicalMaterial
+                color="#b38415"
+                roughness={0.15}
+                metalness={1.0}
+                clearcoat={1.0}
+            />
           </mesh>
 
-          {/* CPU Pins */}
-          {Array.from({ length: 9 }).map((_, i) => {
-            const pos = -10 + i * 2.5;
+          {/* Glowing Center Logo / Die */}
+          <mesh position={[0, 0, 1.05]}>
+            <planeGeometry args={[8, 8]} />
+            <meshBasicMaterial color="#00C0F3" toneMapped={false} />
+          </mesh>
+
+          {/* CPU Pins / Connectors */}
+          {Array.from({ length: 11 }).map((_, i) => {
+            const pos = -10 + i * 2;
             return (
               <React.Fragment key={i}>
-                <mesh position={[pos, 11.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                  <cylinderGeometry args={[0.15, 0.15, 1.5, 8]} />
-                  <meshStandardMaterial color="#F4B41A" metalness={1} />
+                {/* Top */}
+                <mesh castShadow position={[pos, 11.5, -0.2]} rotation={[Math.PI / 2, 0, 0]}>
+                  <cylinderGeometry args={[0.2, 0.2, 1, 8]} />
+                  <meshPhysicalMaterial color="#F4B41A" metalness={1} roughness={0.2} />
                 </mesh>
-                <mesh position={[pos, -11.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                  <cylinderGeometry args={[0.15, 0.15, 1.5, 8]} />
-                  <meshStandardMaterial color="#F4B41A" metalness={1} />
+                {/* Bottom */}
+                <mesh castShadow position={[pos, -11.5, -0.2]} rotation={[Math.PI / 2, 0, 0]}>
+                  <cylinderGeometry args={[0.2, 0.2, 1, 8]} />
+                  <meshPhysicalMaterial color="#F4B41A" metalness={1} roughness={0.2} />
                 </mesh>
-                <mesh position={[11.5, pos, 0]} rotation={[0, 0, Math.PI / 2]}>
-                  <cylinderGeometry args={[0.15, 0.15, 1.5, 8]} />
-                  <meshStandardMaterial color="#F4B41A" metalness={1} />
+                {/* Right */}
+                <mesh castShadow position={[11.5, pos, -0.2]} rotation={[0, 0, Math.PI / 2]}>
+                  <cylinderGeometry args={[0.2, 0.2, 1, 8]} />
+                  <meshPhysicalMaterial color="#F4B41A" metalness={1} roughness={0.2} />
                 </mesh>
-                <mesh position={[-11.5, pos, 0]} rotation={[0, 0, Math.PI / 2]}>
-                  <cylinderGeometry args={[0.15, 0.15, 1.5, 8]} />
-                  <meshStandardMaterial color="#F4B41A" metalness={1} />
+                {/* Left */}
+                <mesh castShadow position={[-11.5, pos, -0.2]} rotation={[0, 0, Math.PI / 2]}>
+                  <cylinderGeometry args={[0.2, 0.2, 1, 8]} />
+                  <meshPhysicalMaterial color="#F4B41A" metalness={1} roughness={0.2} />
                 </mesh>
               </React.Fragment>
             );
           })}
         </group>
+
+        {/* Outer Chips */}
+        {chips.map((chip, idx) => (
+            <mesh key={`chip-${idx}`} castShadow receiveShadow position={chip.position} rotation={chip.rotation} scale={chip.scale}>
+                <boxGeometry args={[1, 1, 1]} />
+                <meshPhysicalMaterial color="#111" roughness={0.7} metalness={0.5} clearcoat={0.1} />
+                {/* Small pin connectors on sides */}
+                <mesh position={[0.55, 0, -0.2]} scale={[0.1, 0.8, 0.5]}>
+                    <boxGeometry args={[1, 1, 1]} />
+                    <meshPhysicalMaterial color="#888" roughness={0.3} metalness={0.9} />
+                </mesh>
+                <mesh position={[-0.55, 0, -0.2]} scale={[0.1, 0.8, 0.5]}>
+                    <boxGeometry args={[1, 1, 1]} />
+                    <meshPhysicalMaterial color="#888" roughness={0.3} metalness={0.9} />
+                </mesh>
+            </mesh>
+        ))}
+
+        {/* Capacitors */}
+        {capacitors.map((cap, idx) => (
+            <mesh key={`cap-${idx}`} castShadow receiveShadow position={cap.position} rotation={cap.rotation} scale={cap.scale}>
+                <cylinderGeometry args={[1, 1, 1, 16]} />
+                {/* Aluminum/metallic top, black body */}
+                <meshPhysicalMaterial color={Math.random() > 0.5 ? "#222" : "#192841"} roughness={0.5} metalness={0.4} />
+                <mesh position={[0, 0.51, 0]}>
+                    <cylinderGeometry args={[0.9, 0.9, 0.05, 16]} />
+                    <meshPhysicalMaterial color="#d4d4d4" roughness={0.2} metalness={0.9} />
+                </mesh>
+            </mesh>
+        ))}
 
         {/* Glowing Data Pulses */}
         <points>
@@ -134,15 +238,39 @@ export function MotherboardScene() {
               itemSize={3}
             />
           </bufferGeometry>
-          <pointsMaterial color="#00C0F3" size={1.8} transparent opacity={0.9} blending={THREE.AdditiveBlending} />
+          {/* using basic material with toneMapped=false is key for postprocessing bloom */}
+          <pointsMaterial color="#00C0F3" size={0.6} toneMapped={false} />
         </points>
 
-        {/* Orbit Ring */}
-        <mesh position={[0, 0, 2]} rotation={[0, 0, 0]}>
-          <torusGeometry args={[36, 0.25, 16, 100]} />
-          <meshStandardMaterial color="#00C0F3" emissive="#004393" metalness={0.8} roughness={0.2} />
-        </mesh>
+        {/* Secondary pulses in Gold */}
+        <points rotation={[0, 0, Math.PI/4]}>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              count={pulseCount/2}
+              array={pulsePos.slice(0, (pulseCount/2)*3)}
+              itemSize={3}
+            />
+          </bufferGeometry>
+          <pointsMaterial color="#F4B41A" size={0.4} toneMapped={false} />
+        </points>
+
       </group>
+
+      {/* Post Processing */}
+      <EffectComposer disableNormalPass>
+        <Bloom
+          luminanceThreshold={1}
+          mipmapBlur
+          intensity={1.5}
+        />
+        <DepthOfField
+          focusDistance={0.01}
+          focalLength={0.1}
+          bokehScale={4}
+          height={480}
+        />
+      </EffectComposer>
     </>
   );
 }
