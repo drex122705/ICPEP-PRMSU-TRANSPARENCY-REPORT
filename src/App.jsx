@@ -55,7 +55,7 @@ export default function App() {
 
       {/* 3D Canvas Background (Fixed) */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
-        <Canvas camera={{ position: [0, -35, 75], fov: 55 }}>
+        <Canvas shadows camera={{ position: [0, -35, 75], fov: 55 }}>
           <color attach="background" args={['#010a18']} />
           <fog attach="fog" args={['#010a18', 10, 150]} />
 
