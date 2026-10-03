@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useData } from './Store';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { Doughnut, Pie, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
 import { Search, Wallet, Receipt, Landmark, AlertOctagon, Upload, Link as LinkIcon, Trash2, Printer, X } from 'lucide-react';
@@ -25,6 +29,37 @@ export function Dashboard() {
   const unpaidCount = students.filter(s => s.status === 'UNPAID').length;
 
   const complianceRate = students.length > 0 ? Math.round((paidCount / students.length) * 100) : 0;
+
+  const dashboardRef = useRef();
+
+  useEffect(() => {
+    if (!hasData) return;
+
+    const cards = gsap.utils.toArray('.dashboard-card');
+
+    cards.forEach((card, i) => {
+      gsap.fromTo(card,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            toggleActions: "play none none reverse"
+          }
+        }
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+
+    ScrollTrigger.refresh();
+  }, [hasData]);
 
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
@@ -73,7 +108,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <div ref={dashboardRef} className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
 
       {/* Header Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
@@ -175,7 +210,7 @@ export function Dashboard() {
               { label: 'Net Treasury Vault', val: `₱${netBalance.toFixed(2)}`, icon: Landmark, color: 'text-prmsu-cyan', bg: 'bg-prmsu-cyan/10' },
               { label: 'Flagged Discrepancies', val: discrepancyCount, icon: AlertOctagon, color: 'text-amber-400', bg: 'bg-amber-500/10' },
             ].map((kpi, i) => (
-              <div key={i} className="p-5 rounded-2xl bg-prmsu-card/90 border border-prmsu-royal/60 shadow-xl">
+              <div key={i} className="dashboard-card opacity-0 p-5 rounded-2xl bg-prmsu-card/90 border border-prmsu-royal/60 shadow-xl">
                 <div className="flex justify-between text-slate-400 text-xs font-mono uppercase tracking-wider mb-3">
                   <span>{kpi.label}</span>
                   <div className={`w-8 h-8 rounded-lg ${kpi.bg} ${kpi.color} flex items-center justify-center`}>
@@ -189,7 +224,7 @@ export function Dashboard() {
 
           {/* Charts */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 shadow-xl h-80 flex flex-col">
+            <div className="dashboard-card opacity-0 rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 shadow-xl h-80 flex flex-col">
               <div className="flex justify-between items-start mb-4">
                  <div>
                     <h3 className="font-bold text-white font-heading">Class Dues Clearance</h3>
@@ -204,7 +239,7 @@ export function Dashboard() {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 shadow-xl h-80 flex flex-col">
+            <div className="dashboard-card opacity-0 rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 shadow-xl h-80 flex flex-col">
               <div className="mb-4">
                  <h3 className="font-bold text-white font-heading">Collection Velocity</h3>
                  <p className="text-xs text-slate-400 font-mono">Submission Timeline</p>
@@ -216,7 +251,7 @@ export function Dashboard() {
           </section>
 
           {/* Search Matrix */}
-          <section className="rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 shadow-xl">
+          <section className="dashboard-card opacity-0 rounded-2xl bg-prmsu-card/80 border border-prmsu-royal/50 p-6 shadow-xl">
             <h3 className="text-xl font-bold text-white font-heading mb-4">Student Clearance Matrix</h3>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-6">

@@ -1,13 +1,28 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useScroll, Environment } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
 export function MotherboardScene() {
-  const scroll = useScroll();
   const groupRef = useRef();
   const { camera } = useThree();
+  const scrollProgressRef = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Calculate scroll progress based on total page height
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0;
+      scrollProgressRef.current = progress;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial call
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Pulse animation data for active glowing traces
   const pulseCount = 60;
@@ -70,22 +85,20 @@ export function MotherboardScene() {
   }, []);
 
   useFrame((state, delta) => {
-    const scrollOffset = scroll ? scroll.offset : 0;
-
     // Animate camera Z position to dive into the motherboard
     const startZ = 70;
     const endZ = 12; // closer
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, startZ - (startZ - endZ) * scrollOffset, 0.1);
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, startZ - (startZ - endZ) * scrollProgressRef.current, 0.1);
 
     // Animate camera Y to get closer to the CPU
     const startY = -35;
     const endY = -15;
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, startY - (startY - endY) * scrollOffset, 0.1);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, startY - (startY - endY) * scrollProgressRef.current, 0.1);
 
     // Subtly rotate the motherboard group based on scroll and time
     if (groupRef.current) {
-        groupRef.current.rotation.x = -0.4 + scrollOffset * 0.45;
-        groupRef.current.rotation.y = scrollOffset * 0.25;
+        groupRef.current.rotation.x = -0.4 + scrollProgressRef.current * 0.45;
+        groupRef.current.rotation.y = scrollProgressRef.current * 0.25;
         groupRef.current.rotation.z += 0.001;
     }
 
@@ -106,16 +119,14 @@ export function MotherboardScene() {
 
   return (
     <>
-      <Environment preset="night" />
-
-      <ambientLight intensity={0.1} />
+      <Environment preset="city" />
 
       {/* Harsh, realistic spotlight casting shadows */}
       <spotLight
         position={[40, 50, 60]}
         angle={0.3}
         penumbra={0.8}
-        intensity={20000}
+        intensity={3000}
         color="#ffffff"
         castShadow
         shadow-bias={-0.0001}
@@ -123,8 +134,8 @@ export function MotherboardScene() {
       />
 
       {/* Secondary colored rim lights */}
-      <spotLight position={[-40, -40, 20]} angle={0.5} penumbra={1} intensity={5000} color="#00C0F3" />
-      <spotLight position={[40, -40, 20]} angle={0.5} penumbra={1} intensity={3000} color="#F4B41A" />
+      <spotLight position={[-40, -40, 20]} angle={0.5} penumbra={1} intensity={1000} color="#00C0F3" />
+      <spotLight position={[40, -40, 20]} angle={0.5} penumbra={1} intensity={800} color="#F4B41A" />
 
       <group ref={groupRef}>
         {/* PCB Substrate */}
@@ -132,10 +143,11 @@ export function MotherboardScene() {
           <boxGeometry args={[110, 80, 1]} />
           <meshPhysicalMaterial
             color="#020f20"
-            roughness={0.8}
-            metalness={0.1}
-            clearcoat={0.2}
-            clearcoatRoughness={0.8}
+            roughness={0.9}
+            metalness={0.2}
+            clearcoat={0.1}
+            clearcoatRoughness={0.9}
+            bumpScale={0.02}
           />
         </mesh>
 
@@ -260,7 +272,7 @@ export function MotherboardScene() {
       {/* Post Processing */}
       <EffectComposer disableNormalPass>
         <Bloom
-          luminanceThreshold={1}
+          luminanceThreshold={2}
           mipmapBlur
           intensity={1.5}
         />
