@@ -45,24 +45,21 @@ export default function App() {
     });
 
     return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
       lenis.destroy();
       cancelAnimationFrame(rafId);
     }
   }, []);
 
   return (
-    <div className="relative w-full bg-prmsu-deep text-slate-100 font-sans selection:bg-prmsu-cyan selection:text-slate-950">
+    <div className="relative w-full bg-prmsu-deep/30 text-slate-100 font-sans selection:bg-prmsu-cyan selection:text-slate-950">
 
       {/* 3D Canvas Background (Fixed) */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
         <Canvas shadows camera={{ position: [0, -35, 75], fov: 55 }}>
           <color attach="background" args={['#010a18']} />
           <fog attach="fog" args={['#010a18', 10, 150]} />
-
-          {/* ScrollControls allows us to map R3F objects to scroll position within a certain height */}
-          <ScrollControls pages={3} damping={0.1}>
-            <MotherboardScene />
-          </ScrollControls>
+          <MotherboardScene />
         </Canvas>
 
         {/* Vignette Overlay */}
@@ -131,7 +128,7 @@ export default function App() {
       </div>
 
       {/* Dashboard Section (Below the 3D Experience) */}
-      <div className="relative z-20 bg-prmsu-deep border-t-4 border-prmsu-cyan">
+      <div className="relative z-20 bg-prmsu-deep/60 backdrop-blur-md border-t-4 border-prmsu-cyan">
         <Dashboard />
       </div>
 
